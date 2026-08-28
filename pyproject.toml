@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "demodsl-mobile"
+version = "0.1.0"
+description = "Mobile phone chrome effects for DemoDSL — status bar frame, push notification banner, home screen overlay."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = "MIT"
+authors = [{ name = "Fran-cois", email = "francois@demodsl.dev" }]
+keywords = ["demodsl", "mobile", "ios", "android", "plugin"]
+dependencies = [
+    "demodsl>=3.15,<4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+
+[project.entry-points."demodsl.effects.browser"]
+demodsl_mobile = "demodsl_mobile:register"
+
+[tool.hatch.build.targets.wheel]
+packages = ["demodsl_mobile"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["demodsl", "demodsl_mobile"]

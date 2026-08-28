@@ -1,0 +1,43 @@
+metadata:
+  title: "demodsl-mobile preview"
+  version: "1.0.0"
+
+scenarios:
+  - name: frame
+    url: "https://example.com"
+    viewport: { width: 430, height: 932 }
+    steps:
+      - action: navigate
+        url: "https://example.com"
+        wait: 4.0
+        effects:
+          - type: mobile_frame
+            duration: 4.0
+            platform: ios
+
+  - name: push
+    url: "https://example.com"
+    viewport: { width: 430, height: 932 }
+    steps:
+      - action: navigate
+        url: "https://example.com"
+        wait: 4.0
+        effects:
+          - type: push_notification
+            duration: 4.0
+            hold: 3.0
+            app_name: "Banking"
+            icon_letter: "B"
+            title: "Payment received"
+            body: "You got $42 from Alex."
+
+  - name: home
+    url: "https://example.com"
+    viewport: { width: 430, height: 932 }
+    steps:
+      - action: navigate
+        url: "https://example.com"
+        wait: 4.0
+        effects:
+          - type: mobile_home_screen
+            duration: 4.0
