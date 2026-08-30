@@ -70,6 +70,19 @@ class TestMobileFrame:
         js = _js(m)
         assert "<script>alert(1)</script>" not in js
 
+    def test_real_status_icons_not_emoji(self) -> None:
+        m = MagicMock()
+        MobileFrameEffect().inject(m, {})
+        js = _js(m)
+        assert "<svg" in js
+
+    def test_battery_level_changes_fill_width(self) -> None:
+        low = MagicMock()
+        MobileFrameEffect().inject(low, {"battery": 10})
+        high = MagicMock()
+        MobileFrameEffect().inject(high, {"battery": 100})
+        assert _js(low) != _js(high)
+
 
 class TestPushNotification:
     def test_default_render(self) -> None:
@@ -147,3 +160,13 @@ class TestMobileHomeScreen:
         )
         js = _js(m)
         assert "<script>alert(1)</script>" not in js
+
+    def test_custom_date_text(self) -> None:
+        m = MagicMock()
+        MobileHomeScreenEffect().inject(m, {"date_text": "Friday, 1 January"})
+        assert "Friday, 1 January" in _js(m)
+
+    def test_real_status_icons_in_status_bar(self) -> None:
+        m = MagicMock()
+        MobileHomeScreenEffect().inject(m, {})
+        assert "<svg" in _js(m)

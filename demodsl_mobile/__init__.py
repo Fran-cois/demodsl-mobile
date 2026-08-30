@@ -33,6 +33,7 @@ _EFFECT_PARAMS = {
         "platform",
         "color",
         "time_text",
+        "battery",
         "accent",
     },
     "push_notification": {
@@ -48,6 +49,8 @@ _EFFECT_PARAMS = {
         "apps",
         "dock",
         "time_text",
+        "date_text",
+        "battery",
         "theme",
         "accent",
     },

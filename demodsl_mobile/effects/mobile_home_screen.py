@@ -9,6 +9,7 @@ from typing import Any
 from demodsl.effects.js_builder import iife, inject_style
 from demodsl.effects.registry import BrowserEffect
 from demodsl.effects.sanitize import sanitize_css_color, sanitize_html_text, sanitize_number
+from demodsl_mobile.effects._status_icons import SIGNAL_SVG, WIFI_SVG, battery_svg
 from demodsl_mobile.effects._theme import themed_accent
 
 _DEFAULT_APPS = [
@@ -41,7 +42,11 @@ class MobileHomeScreenEffect(BrowserEffect):
     dock : list[dict]
         Same shape, rendered in the bottom dock (default 4 apps).
     time_text : str
-        Clock widget text (default ``"9:41"``).
+        Status-bar clock / widget text (default ``"9:41"``).
+    date_text : str
+        Date widget text (default ``"Monday, 12 October"``).
+    battery : int
+        Battery level 0-100 shown in the status bar (default ``85``).
     theme : str
         ``"aurora"`` (default, animated gradient wallpaper) or ``"solid"``.
     duration : float
@@ -56,10 +61,13 @@ class MobileHomeScreenEffect(BrowserEffect):
         raw_dock = params.get("dock") or _DEFAULT_DOCK
         dock = self._clean_apps(raw_dock, _DEFAULT_DOCK)
         time_text = sanitize_html_text(str(params.get("time_text", "9:41"))) or "9:41"
+        date_text = sanitize_html_text(str(params.get("date_text", "Monday, 12 October")))
         theme = params.get("theme", "aurora")
         if theme not in ("aurora", "solid"):
             theme = "aurora"
         accent = themed_accent(params, "#7C6FE8")
+        battery = sanitize_number(params.get("battery", 85), default=85, min_val=1, max_val=100)
+        battery_glyph = battery_svg(battery)
         duration = sanitize_number(
             params.get("duration", 6.0), default=6.0, min_val=1.0, max_val=60.0
         )
@@ -108,20 +116,35 @@ class MobileHomeScreenEffect(BrowserEffect):
             win.id = '__demodsl_mobile_home';
             win.style.cssText = 'position:fixed;inset:0;z-index:2147483641;'
                 + 'background:{wallpaper};'
-                + 'display:grid;grid-template-rows:auto 1fr auto;'
+                + 'display:grid;grid-template-rows:auto auto 1fr auto;'
                 + 'animation:__demodsl_home_in 0.3s ease-out forwards;';
 
-            const clock = document.createElement('div');
-            clock.style.cssText = 'padding:64px 0 24px;text-align:center;'
+            const statusBar = document.createElement('div');
+            statusBar.style.cssText = 'padding:18px 28px 0;display:flex;'
+                + 'align-items:center;justify-content:space-between;color:#fff;'
+                + 'font-family:-apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;'
+                + 'font-size:15px;font-weight:600;'
+                + 'text-shadow:0 1px 3px rgba(0,0,0,0.5);';
+            statusBar.innerHTML = `
+                <span>{time_text}</span>
+                <span style="display:flex;gap:6px;align-items:center;">
+                  {SIGNAL_SVG}{WIFI_SVG}{battery_glyph}
+                </span>`;
+            win.appendChild(statusBar);
+
+            const widget = document.createElement('div');
+            widget.style.cssText = 'margin:18px 28px 4px;padding:16px 18px;'
+                + 'background:rgba(255,255,255,0.14);border-radius:20px;'
+                + 'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);'
                 + 'color:#fff;font-family:-apple-system,"SF Pro Display",'
                 + '"Segoe UI",Roboto,sans-serif;';
-            clock.innerHTML = `
-                <div style="font-size:56px;font-weight:300;">{time_text}</div>
-                <div style="font-size:15px;opacity:0.85;margin-top:4px;">Today</div>`;
-            win.appendChild(clock);
+            widget.innerHTML = `
+                <div style="font-size:34px;font-weight:300;line-height:1;">{time_text}</div>
+                <div style="font-size:13px;opacity:0.8;margin-top:4px;">{date_text}</div>`;
+            win.appendChild(widget);
 
             const grid = document.createElement('div');
-            grid.style.cssText = 'padding:0 28px;display:grid;'
+            grid.style.cssText = 'padding:14px 28px 0;display:grid;'
                 + 'grid-template-columns:repeat(4, 1fr);'
                 + 'row-gap:22px;align-content:start;';
             grid.innerHTML = `{app_cells}`;
