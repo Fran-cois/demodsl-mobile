@@ -58,3 +58,13 @@ scenarios:
 ```
 
 See `examples/demo_mobile_preview.yaml` for a full runnable config.
+
+## Design fidelity
+
+The status bar (signal / wifi / battery), Dynamic Island, home indicator
+and Android back/home/recents glyphs are all real inline SVG shapes, not
+emoji — tuned to read as an actual OS chrome at a glance rather than a
+generic mockup. `mobile_home_screen` mirrors a real iOS home screen
+(slim status bar + a small clock/date widget + app grid + dock), not a
+lock screen. `battery` (0-100) and `date_text` are also available on
+both `mobile_frame` and `mobile_home_screen`.
